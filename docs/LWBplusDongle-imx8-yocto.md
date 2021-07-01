@@ -163,7 +163,7 @@
 
      
 
-     ![](../images/dongle/BTScan.PNG)
+     ![](../images/dongle/BTScan.png)
 
      
 

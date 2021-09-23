@@ -2,7 +2,7 @@
 
 
 
- This tutorial will show you how to integrate the LWB5+ Dongle on an i.MX 8M Plus Yocto platform.
+ This tutorial will show you how to integrate the LWB5+ Dongle on an i.MX 8M Plus Yocto platform. To watch video tutorial, click [here](https://youtu.be/Fo51VTsuSb4).
 
 ## Required Tools
 
@@ -89,7 +89,7 @@
    iw \ 
    kernel-module-lwb5p-backports-laird \ 
    lwb5plus-usb-sa-firmware \ 
-   sterling-supplicant-lwb \ 
+   sterling-supplicant \ 
    laird-networkmanager \ 
    " 
    ```

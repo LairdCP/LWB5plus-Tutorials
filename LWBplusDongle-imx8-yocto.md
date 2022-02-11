@@ -1,3 +1,11 @@
+---
+layout: page
+title: "LWB5+ Dongle i.MX 8M Plus Yocto Integration"
+category: Sterling-LWB5+ Tutorials
+order: 1
+product: Sterling-LWB5+ 
+---
+
 # LWB5+ Dongle i.MX 8M Plus Yocto Integration
 
 
@@ -14,7 +22,7 @@
 
    We will flash our image into a micro SD card. If you prefer, you can use the onboard eMMC, but for this tutorial. we will boot from a micro SD card. The LWB5+ Dongle will plug into J7. Power will be applied via J5, and J23 will be used to connect to a serial terminal (115200, N, 8, 1). If the build works, the drivers will automatically load on power up. We will then connect to an AP and do a ping to demonstrate that Wi-Fi works. For Bluetooth, we will do a scan to show that the module can detect devices that are discoverable or advertising.
 
-   ![](../images/dongle/Setup.PNG)
+   ![](./images/dongle/Setup.PNG)
 
    
 
@@ -109,7 +117,7 @@
 
      
 
-     ![](../images/dongle/wlan-kernel-setting.PNG)
+     ![](./images/dongle/wlan-kernel-setting.PNG)
 
      
 
@@ -117,7 +125,7 @@
 
      
 
-     ![](../images/dongle/bt-wireless-kernel-setting.PNG)
+     ![](./images/dongle/bt-wireless-kernel-setting.PNG)
 
      
      
@@ -155,7 +163,7 @@
      ping www.google.com
      ```
 
-     ![](../images/dongle/ping.png)
+     ![](./images/dongle/ping.png)
 
      
 
@@ -163,7 +171,7 @@
 
      
 
-     ![](../images/dongle/BTScan.png)
+     ![](./images/dongle/BTScan.png)
 
      
 

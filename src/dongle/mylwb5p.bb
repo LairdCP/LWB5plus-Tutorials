@@ -27,8 +27,8 @@ IMAGE_INSTALL += "\
 	iperf3 \
 	tcpdump \
 	iw \
-	kernel-module-lwb5p-backports-laird \
+	kernel-module-lwb5p-backports-summit \
 	lwb5plus-usb-sa-firmware \
 	sterling-supplicant-lwb \
-	laird-networkmanager \
+	summit-networkmanager-st60 \
 	"

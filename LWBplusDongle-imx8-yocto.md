@@ -5,7 +5,7 @@ category: Sterling-LWB5+ Tutorials
 order: 1
 technology: wifi
 product: Sterling-LWB5+ 
-status: publish
+status: Update
 ---
 
 # LWB5+ Dongle i.MX 8M Plus Yocto Integration
@@ -35,7 +35,7 @@ status: publish
    ```
    mkdir ~/projects/imx8mp
    cd ~/projects/imx8mp
-   repo init -u https://source.codeaurora.org/external/imx/imx-manifest -b imx-linux-zeus -m imx-5.4.70-2.3.3.xml && repo sync 
+   repo init -u https://source.codeaurora.org/external/imx/imx-manifest -b imx-linux-kirkstone -m imx-5.15.32-2.0.0.xml && repo sync 
    ```
 
    
@@ -51,9 +51,12 @@ status: publish
 3. Modify the *~/projects/imx8mp/build-imx8p-wayland/conf/bblayers.conf* file. Add the line below to the file.
 
    ```
-   BBLAYERS += "${BSPDIR}/sources/meta-laird-cp" 
+   BBLAYERS += "${BSPDIR}/sources/meta-summit-radio/meta-summit-radio" 
    ```
-
+   Note: for Yocto projects 3.3 (Hardknott) and earlier the line you add would be 
+```
+   BBLAYERS += "${BSPDIR}/sources/meta-summit-radio/meta-summit-radio-pre-3.4"
+```
    
 
 4. Modify the  *~/projects/imx8mp/build-imx8p-wayland/conf/local.conf* file.  Add the lines below to the file.
@@ -64,26 +67,39 @@ status: publish
    PREFERRED_PROVIDER_wpa-supplicant-passphrase = "sterling-supplicant" 
    
    BBMASK += " \ 
-       meta-laird-cp/recipes-packages/openssl \ 
-       meta-laird-cp/recipes-packages/.*/.*openssl10.* \ 
+       meta-summit-radio/meta-summit-radio/recipes-packages/openssl \ 
+       meta-summit-radio/meta-summit-radio/recipes-packages/.*/.*openssl10.* \ 
        "
    
    PREFERRED_RPROVIDER_wireless-regdb-static = "wireless-regdb" 
    LWB_REGDOMAIN = "US" 
    ```
-
+Note: for Yocto projects 3.3 (Hardknott) and earlier you would add:
+```
+ PREFERRED_PROVIDER_wpa-supplicant = "sterling-supplicant" 
+   PREFERRED_PROVIDER_wpa-supplicant-cli = "sterling-supplicant" 
+   PREFERRED_PROVIDER_wpa-supplicant-passphrase = "sterling-supplicant" 
+   
+   BBMASK += " \ 
+       meta-summit-radio/meta-summit-radio-pre-3.4/recipes-packages/openssl \ 
+       meta-summit-radio/meta-summit-radio-pre-3.4/recipes-packages/.*/.*openssl10.* \ 
+       "
+   
+   PREFERRED_RPROVIDER_wireless-regdb-static = "wireless-regdb" 
+   LWB_REGDOMAIN = "US" 
+   ```
    
 
-5. Clone the meta-laird-cp layer into *~/projects/imx8mp/sources* directory
+5. Clone the meta-summit-radio layer into *~/projects/imx8mp/sources* directory
 
    ```
    cd ~/projects/imx8mp/sources
-   git clone https://github.com/LairdCP/meta-laird-cp
+   git clone https://github.com/LairdCP/meta-summit-radio
    ```
 
    
 
-6. Edit the *~/projects/imx8mp/sources/meta-laird-cp/recipes-packages/images/sample-image-cp-lwb5plus.bb* recipe by replacing *lwb5plus-sdio-div-firmware* with *lwb5plus-usb-sa-firmware* and adding *laird-networkmanager*. Then save it as *mylwb5p.bb*. A snippet of the saved file is shown below.
+6. Edit the *~/projects/imx8mp/sources/meta-summit-radio/meta-summit-radio/recipes-packages/images/sample-image-cp-lwb5plus.bb* recipe by replacing *lwb5plus-sdio-div-firmware* with *lwb5plus-usb-sa-firmware* and adding *laird-networkmanager*. Then save it as *mylwb5p.bb*. A snippet of the saved file is shown below.
 
    ```
    IMAGE_INSTALL += "\ 
@@ -97,10 +113,10 @@ status: publish
    iperf3 \ 
    tcpdump \ 
    iw \ 
-   kernel-module-lwb5p-backports-laird \ 
+   kernel-module-lwb5p-backports-summit \ 
    lwb5plus-usb-sa-firmware \ 
-   sterling-supplicant \ 
-   laird-networkmanager \ 
+   sterling-supplicant-lwb \ 
+   summit-networkmanager-st60 \ 
    " 
    ```
 
@@ -179,7 +195,7 @@ status: publish
 
 ## References
 
-- https://github.com/LairdCP/meta-laird-cp
+- https://github.com/LairdCP/meta-summit-radio
 - The modified files on this tutorial
   - [bblayers.conf](../src/dongle/bblayers.conf)
   - [local.conf](../src/dongle/local.conf)

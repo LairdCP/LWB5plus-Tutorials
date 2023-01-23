@@ -1,3 +1,4 @@
+# For use with Yocto project builds 3.3 and earlier. Please rename to local.conf before using
 MACHINE ??= 'imx8mpevk'
 DISTRO ?= 'fsl-imx-wayland'
 PACKAGE_CLASSES ?= 'package_rpm'
@@ -28,8 +29,8 @@ PREFERRED_PROVIDER_wpa-supplicant-cli = "sterling-supplicant"
 PREFERRED_PROVIDER_wpa-supplicant-passphrase = "sterling-supplicant" 
 
 BBMASK += " \ 
-    meta-summit-radio/meta-summit-radio/recipes-packages/openssl \ 
-    meta-summit-radio/meta-summit-radio/recipes-packages/.*/.*openssl10.* \ 
+    meta-summit-radio/meta-summit-radio-pre-3.4/recipes-packages/openssl \ 
+    meta-summit-radio/meta-summit-radio-pre-3.4/recipes-packages/.*/.*openssl10.* \ 
     "
 
 PREFERRED_RPROVIDER_wireless-regdb-static = "wireless-regdb" 

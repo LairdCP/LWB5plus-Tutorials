@@ -1,0 +1,7 @@
+added extra /meta-summit-radio to directory structure throughout document
+changed lrd-networkmanager to summit-networkmanage-st60
+changed yocto image from zeus to kirkstone
+changed kernel-module-lwb5p-backports-lrd to kernel-module-lwb5p-backports-summit
+added information for pre-3.4 kernels
+updated bblayers.conf, local.conf and mylwb5p.bb files
+added bblaywers-pre-3.4.conf, local-pre-3.4.conf mylwb5p-pre-3.4.bb files

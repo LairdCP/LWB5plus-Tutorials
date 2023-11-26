@@ -1,52 +1,132 @@
 ---
 layout: page
-title: "LWB5+ Dongle i.MX 8M Plus Yocto Integration"
+title: "LWB5+ Dongle i.MX 8M Plus Yocto Integration (lrd-11.0)"
 category: Sterling-LWB5+ Tutorials
 order: 1
 technology: wifi
 product: Sterling-LWB5+ 
+description: "Application guides for programming the Sterling-LWB5+."
 status: Update
 ---
 
-# LWB5+ Dongle i.MX 8M Plus Yocto Integration
+# LWB5+ i.MX 8M Plus Yocto Integration (lrd-11.0)
 
+ This tutorial will show you how to integrate the LWB5+ on an i.MX 8M Plus EVK.The Sterling-LWB5+ has various models with different interfaces for Wi-Fi and Bluetooth depending on the model chosen. It is assumed the user is familiar with Linux and embedded systems. Included in this tutorial is the physical setup including hardware modifications needed, the Yocto setup and build, and verifying the Wi-Fi and Bluetooth are functional.  
 
-
- This tutorial will show you how to integrate the LWB5+ Dongle on an i.MX 8M Plus Yocto platform. To watch video tutorial, click [here](https://youtu.be/Fo51VTsuSb4).
+ **Note:** This guide is for Laird backports version lrd-11.x and higher. For Laird code lrd-10.x or lower please see: https://lairdcp.github.io/guides/lwb5plus-tutorials/1.0/LWBplusDongle-imx8-yocto.html
 
 ## Required Tools
 
-   - [LWB5+ Dongle](https://www.lairdconnect.com/wireless-modules/wifi-modules-bluetooth/sterling-lwb5-plus-wifi-5-bluetooth-5-module) (Part No. 450-00137)
+   - [LWB5+](https://www.lairdconnect.com/wireless-modules/wifi-modules-bluetooth/sterling-lwb5-plus-wifi-5-bluetooth-5-module)
    - i.MX 8M Plus EVK (Part No. 8MPLUSLPD4-EVK)
    - Linux PC with a Yocto Build Environment. As a prerequisite for this tutorial, we are going to assume that you know how to setup a Yocto build environment. This is covered very well in NXP's documentation ( i.e. see [i.MX_Yocto_Project_User's_Guide.pdf, Rev. L5.4.70_2.3.0 — 31 December 2020](https://community.nxp.com/pwmxy87654/attachments/pwmxy87654/imx-processors/171785/1/i.MX_Yocto_Project_User's_Guide.pdf) for details on how to install the required *host packages* and the *repo utility*, and how to setup *git*); so we will not cover it here. We will focus on how to add Laird Connectivity's external layer into a Yocto build. 
 
-## Setup
+## Yocto setup and build
 
-   We will flash our image into a micro SD card. If you prefer, you can use the onboard eMMC, but for this tutorial. we will boot from a micro SD card. The LWB5+ Dongle will plug into J7. Power will be applied via J5, and J23 will be used to connect to a serial terminal (115200, N, 8, 1). If the build works, the drivers will automatically load on power up. We will then connect to an AP and do a ping to demonstrate that Wi-Fi works. For Bluetooth, we will do a scan to show that the module can detect devices that are discoverable or advertising.
+#### Create project folders
 
-   ![](./images/dongle/Setup.PNG)
+```
+mkdir -p ~/projects/yocto-mickledore
+cd ~/projects/yocto-mickledore
+```   
 
-   
+#### Download Yocto Mickledore release
 
-1. Download the i.MX Yocto Project Community BSP recipe layers
+```
+repo init -u https://github.com/nxp-imx/imx-manifest -b imx-linux-mickledore -m imx-6.1.22-2.0.0.xml
+repo sync
+```
+**Note:** At the time of writing version 6.1.22-2.0.0 is the latest Mickledore release. Please check https://github.com/nxp-imx/imx-manifest for the latest available version. 
 
-   **Reminder:** Prior to proceeding, make sure the required host packages and repo utility are installed. Git must also be configured properly. Refer to [i.MX_Yocto_Project_User's_Guide.pdf, Rev. L5.4.70_2.3.0 — 31 December 2020](https://community.nxp.com/pwmxy87654/attachments/pwmxy87654/imx-processors/171785/1/i.MX_Yocto_Project_User's_Guide.pdf) for details.
+#### Setup build config
 
-   ```
-   mkdir ~/projects/imx8mp
-   cd ~/projects/imx8mp
-   repo init -u https://source.codeaurora.org/external/imx/imx-manifest -b imx-linux-kirkstone -m imx-5.15.32-2.0.0.xml && repo sync 
-   ```
+Create a build directory and set the DISTRO and MACHINE type.
 
-   
+```
+DISTRO=fsl-imx-fb MACHINE=imx8mpevksource imx-setup-release.sh -b build-imx8mp
+```
 
-2. Setup build configuration
+#### Resourcing environment
 
-   ```
-   DISTRO=fsl-imx-wayland MACHINE=imx8mpevk source imx-setup-release.sh -b build-imx8p-wayland 
-   ```
+If the terminal is closed the environment will need to be resourced.
 
-   
+```
+cd ~/projects/yocto-mickledore
+. setup-environment build-imx8mp
+
+
+Welcome to Freescale Community BSP
+
+The Yocto Project has extensive documentation about OE including a
+reference manual which can be found at:
+    http://yoctoproject.org/documentation
+
+For more information about OpenEmbedded see their website:
+    http://www.openembedded.org/
+
+You can now run 'bitbake <target>'
+
+Common targets are:
+    core-image-minimal
+    meta-toolchain
+    meta-toolchain-sdk
+    adt-installer
+    meta-ide-support
+
+Your configuration files at build-imx6ullevk/ have not been touched.
+
+```
+#### Edit local.conf
+
+Edit the file ~/projects/yocto-mickledore/build-imx8mp/conf/local.conf add the following to the end of the file.
+
+```
+PREFERRED_PROVIDER_wpa-supplicant = "summit-supplicant-lwb"
+PREFERRED_PROVIDER_wpa-supplicant-cli = "summit-supplicant-lwb"
+PREFERRED_PROVIDER_wpa-supplicant-passphrase = "summit-supplicant-lwb"
+PREFERRED_RPROVIDER_wireless-regdb-static = "wireless-regdb"
+LWB_REGDOMAIN = "US"
+```
+**Note:** You do not need to use LWB_REGDOMAIN to specify the regulatory domain. You could choose to implement it using a device tree setting or configure the module parameter some other way. However, the regulatory domain must be configured for the LWB5+ in some manner
+
+#### Edit bblayers.conf
+Edit your bblayer.conf file and add the following to the bottom. 
+
+```
+BBLAYERS += "${BSPDIR}/sources/meta-summit-radio/meta-summit-radio"
+```
+#### Download Laird Yocto meta-layer (meta-summit-radio)
+```
+cd ~/project_directory/sources
+
+#clone the Laird meta layer for yocto
+git clone -b lrd-11.39.0.x https://github.com/LairdCP/meta-summit-radio
+```
+**Note:** At the time this document was written version 11.39.0.x was the latest release of Laird Backports. There may be a new version available. Please check https://github.com/LairdCP/meta-summit-radio for the latest image. 
+
+#### Copy sample image recipe
+
+Copy a sample image recipe and rename the recipe to something memorable. Here I've used my name, the product name, the product interface (usb/usb), the EVK it is built for and the meta-summit-radio current release for the image recipe name.
+
+In the end the filename will be: bob-lwbp-usus-imx8mp-lrd11.rootfs.wic.zst giving a nice understanding who built it, what Wi-Fi module it's for, the interface used, which driver release and platform.
+
+
+cd ~/project_directory/sources/meta-summit-radio/meta-summit-radio/recipes-packages/images
+
+#### LWB5+ Interfaces
+The Sterling-LWB5+ comes in many different modules, with different interfaces for both Wi-Fi and Bluetooth and different firmware files for each. Please see the chart below for details
+| Part Number| Form Factor | Antenna | Wi-Fi Interface| Bluetooth Interface | Firmware Filename |
+| ------ | ------ | ------ | ------ | ------ | ------|
+| 453-00045 | Solder-down | Integrated Chip | SDIO or USB | UART or USB | lwb5plus-sdio-sa-firmware or lwb5plus-usb-sa-firmware |
+| 453-00046 | Solder-down | MHF4L | SDIO or USB | UART or USB | lwb5plus-sdio-sa-firmware or lwb5plus-usb-sa-firmware |
+| 453-00047 | Solder-down | Trace pin | SDIO or USB | UART or USB | lwb5plus-sdio-sa-firmware or lwb5plus-usb-sa-firmware |
+| 453-0048 | M.2 | MHF4L x2 | SDIO | UART | lwb5plus-sdio-div-firmware (2 antennas)lwb5plus-sdio-sa-m2-firmware (1 antenna) |
+| 453-0049 | M.2 | MHF4L x2 | USB | USB | lwb5plus-usb-div-firmware (2 antennas)lwb5plus-usb-sa-m2-firmware (1 antenna) |
+| 450-00137 | USB Dongle | Integrated Chip | USB | USB | lwb5plus-usb-sa-firmware |
+```
+#copy the bitbake recipe example
+cp sample-image-lwb5plus.bb bob-lwbp-usus-imx8mp-lrd11.bb
+```
 
 3. Modify the *~/projects/imx8mp/build-imx8p-wayland/conf/bblayers.conf* file. Add the line below to the file.
 

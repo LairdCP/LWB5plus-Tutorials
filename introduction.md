@@ -12,4 +12,4 @@ This guide covers tutorials for specific applications with the Sterling-LWB5+ mo
 
 More documentation, ordering information, and resources related to the Sterling-LWB5+ can be found on our website: 
 
-[https://lairdconnect.com/sterling-lwb5-plus](https://lairdconnect.com/sterling-lwb5plus)
+[https://ezurio.com/sterling-lwb5-plus](https://ezurio.com/sterling-lwb5plus)
